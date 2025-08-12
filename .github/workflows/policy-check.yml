@@ -5,38 +5,45 @@ jobs:
   policy:
     runs-on: ubuntu-latest
     steps:
-      # Checkout repository
       - uses: actions/checkout@v4
 
-      # Install Terraform
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.7.5
 
-      # Install Go (needed for conftest)
       - uses: actions/setup-go@v4
         with:
           go-version: '1.21'
 
-      # Install conftest
       - run: go install github.com/open-policy-agent/conftest@latest
 
-      # Install OPA CLI
-      - run: curl -L -o opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64 && chmod +x opa && sudo mv opa /usr/local/bin/
+      # Dummy Terraform
+      - run: mkdir terraform-test
+      - run: |
+          cat <<EOF > terraform-test/main.tf
+          terraform {
+            required_version = ">= 1.7.5"
+          }
 
-      # Terraform plan
+          provider "null" {}
+
+          resource "null_resource" "example" {
+            provisioner "local-exec" {
+              command = "echo 'Hello Policy Check'"
+            }
+          }
+          EOF
+
+      # Run Terraform plan
       - run: cd terraform-test && terraform init && terraform plan -out=tfplan
-
-      # Export tfplan to JSON
       - run: cd terraform-test && terraform show -json tfplan > tfplan.json
 
-      # Inject tags into tfplan.json for testing
-      - run: cd terraform-test && jq '.resource_changes[].change.after.tags = {"environment":"dev"}' tfplan.json > tfplan_tagged.json
+      # Inject environment tag into plan JSON
+      - run: jq '.resource_changes[].change.after |= . + {tags: {environment: "dev"}}' terraform-test/tfplan.json > terraform-test/tfplan_tagged.json
 
-      # Conftest policy check (Step 5.1)
-      - name: Conftest Policy Check
-        run: conftest test terraform-test/tfplan_tagged.json
+      # Conftest check
+      - run: conftest test terraform-test/tfplan_tagged.json
 
-      # OPA unit tests for Rego policies (Step 5.2)
-      - name: Run OPA Unit Tests
+      # OPA Unit Tests
+      - name: Run OPA unit tests
         run: opa test policy/
