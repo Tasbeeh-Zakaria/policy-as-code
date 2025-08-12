@@ -1,31 +1,11 @@
-package main
+package policy
 
-# Pass case: environment tag is present
-test_pass_environment_tag {
-  not deny with input as {
-    "resource_changes": [
-      {
-        "change": {
-          "after": {
-            "tags": { "environment": "dev" }
-          }
-        }
-      }
-    ]
-  }
+test_environment_tag_present if {
+  input := {"resource": {"tags": {"environment": "dev"}}}
+  not deny with input as input
 }
 
-# Fail case: environment tag is missing
-test_fail_missing_tag {
-  deny with input as {
-    "resource_changes": [
-      {
-        "change": {
-          "after": {
-            "tags": {}
-          }
-        }
-      }
-    ]
-  }
+test_environment_tag_missing if {
+  input := {"resource": {"tags": {}}}
+  deny with input as input
 }
