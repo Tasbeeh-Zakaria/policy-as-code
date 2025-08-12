@@ -1,0 +1,21 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Policy Violations Dashboard",
+    "panels": [
+      {
+        "type": "graph",
+        "title": "Gatekeeper Violations Over Time",
+        "targets": [
+          {
+            "expr": "count_over_time({kind=\"violation\"}[5m])",
+            "legendFormat": "Violations"
+          }
+        ]
+      }
+    ],
+    "schemaVersion": 27,
+    "version": 1
+  },
+  "overwrite": false
+}
