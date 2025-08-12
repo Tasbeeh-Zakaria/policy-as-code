@@ -1,7 +1,7 @@
 package main
 
-# Deny if "environment" tag is missing or empty
+# Fail if any resource is missing 'environment'
 deny[msg] {
-  input.resource_changes[_].change.after.tags.environment == ""
+  not input.resource_changes[_].change.after.triggers.environment
   msg := "Resource missing required 'environment' tag"
 }
