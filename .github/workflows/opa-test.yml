@@ -12,8 +12,9 @@ jobs:
         uses: open-policy-agent/setup-opa@v1
         with:
           version: v0.63.0
-
+          
       - name: Run OPA unit tests
         run: |
-          opa version
-          opa test -v .
+         opa version
+         opa test -v policy/
+
