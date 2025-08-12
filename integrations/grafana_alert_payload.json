@@ -1,0 +1,36 @@
+{
+  "receiver": "grafana-default-webhook",
+  "status": "firing",
+  "orgId": 1,
+  "alerts": [
+    {
+      "status": "firing",
+      "labels": {
+        "alertname": "PolicyViolationDetected",
+        "severity": "warning",
+        "source": "gatekeeper",
+        "namespace": "gatekeeper-system"
+      },
+      "annotations": {
+        "summary": "Policy violation detected",
+        "description": "Required tag 'environment' missing on one or more resources."
+      },
+      "startsAt": "2025-08-12T09:00:00Z",
+      "endsAt": "0001-01-01T00:00:00Z",
+      "generatorURL": "https://grafana.example.local/alerting"
+    }
+  ],
+  "groupLabels": {
+    "alertname": "PolicyViolationDetected"
+  },
+  "commonLabels": {
+    "severity": "warning"
+  },
+  "commonAnnotations": {
+    "quickFix": "Apply required tags or trigger auto-tag remediation."
+  },
+  "externalURL": "https://grafana.example.local",
+  "version": "1",
+  "groupKey": "{}:{}",
+  "truncatedAlerts": 0
+}
