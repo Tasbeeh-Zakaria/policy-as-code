@@ -1,14 +1,26 @@
 name: Policy Check
 on: [push, pull_request]
+
 jobs:
   policy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # Install Terraform
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.7.5   # pick version you need
+
+      # Install Go (needed for conftest)
       - uses: actions/setup-go@v4
         with:
           go-version: '1.21'
+
+      # Install conftest
       - run: go install github.com/open-policy-agent/conftest@latest
+
+      # Terraform plan and conftest test
       - run: terraform init && terraform plan -out=tfplan
       - run: terraform show -json tfplan > tfplan.json
       - run: conftest test tfplan.json
