@@ -1,13 +1,13 @@
 package policy
 
-# Test case: environment tag present
+# Should PASS (tag present -> no denies)
 test_environment_tag_present {
-    test_input := {"resource": {"tags": {"environment": "dev"}}}
-    not deny with input as test_input
+  test_input := {"resource": {"tags": {"environment": "dev"}}}
+  not deny with input as test_input
 }
 
-# Test case: environment tag missing
+# Should PASS (tag missing -> deny contains message)
 test_environment_tag_missing {
-    test_input := {"resource": {"tags": {}}}
-    count(deny with input as test_input) > 0
+  test_input := {"resource": {"tags": {}}}
+  deny contains "The 'environment' tag is required" with input as test_input
 }
