@@ -1,7 +1,5 @@
 name: Policy Check
-on:
-  push:
-  pull_request:
+on: [push, pull_request]
 
 jobs:
   policy:
@@ -9,23 +7,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Terraform
-        uses: hashicorp/setup-terraform@v2
+      # Install Terraform
+      - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.7.5
 
-      - name: Install Go
-        uses: actions/setup-go@v4
+      # Install Go (needed for conftest)
+      - uses: actions/setup-go@v4
         with:
           go-version: '1.21'
 
+      # Install conftest
       - name: Install conftest
         run: go install github.com/open-policy-agent/conftest@latest
 
+      # Create dummy Terraform config (safe & quick)
       - name: Create dummy Terraform config
         run: |
           mkdir -p terraform-test
-          cat > terraform-test/main.tf <<'EOT'
+          cat <<EOF > terraform-test/main.tf
           terraform {
             required_version = ">= 1.7.5"
           }
@@ -34,11 +34,12 @@ jobs:
 
           resource "null_resource" "example" {
             provisioner "local-exec" {
-              command = "echo Hello Policy Check"
+              command = "echo 'Hello Policy Check'"
             }
           }
-          EOT
+          EOF
 
+      # Terraform Init & Plan
       - name: Terraform Init & Plan
         run: |
           cd terraform-test
@@ -46,5 +47,10 @@ jobs:
           terraform plan -out=tfplan
           terraform show -json tfplan > tfplan.json
 
+      # Conftest Policy Check
       - name: Conftest Policy Check
-        run: echo "Dummy conftest check"
+        run: conftest test terraform-test/tfplan.json
+
+      # Run OPA Unit Tests for Rego policies
+      - name: Run OPA Unit Tests
+        run: opa test policy/
