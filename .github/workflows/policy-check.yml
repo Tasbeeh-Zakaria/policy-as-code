@@ -21,7 +21,6 @@ jobs:
       - name: Install conftest
         run: go install github.com/open-policy-agent/conftest@latest
 
-      # Create dummy Terraform config (safe & quick)
       - name: Create dummy Terraform config
         run: |
           mkdir -p terraform-test
@@ -33,6 +32,9 @@ jobs:
           provider "null" {}
 
           resource "null_resource" "example" {
+            triggers = {
+              environment = "dev"
+            }
             provisioner "local-exec" {
               command = "echo 'Hello Policy Check'"
             }
