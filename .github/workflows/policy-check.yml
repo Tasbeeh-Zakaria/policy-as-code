@@ -10,7 +10,7 @@ jobs:
       # Install Terraform
       - uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.7.5   # pick version you need
+          terraform_version: 1.7.5
 
       # Install Go (needed for conftest)
       - uses: actions/setup-go@v4
@@ -21,6 +21,6 @@ jobs:
       - run: go install github.com/open-policy-agent/conftest@latest
 
       # Terraform plan and conftest test
-      - run: terraform init && terraform plan -out=tfplan
-      - run: terraform show -json tfplan > tfplan.json
-      - run: conftest test tfplan.json
+      - run: cd terraform-test && terraform init && terraform plan -out=tfplan
+      - run: cd terraform-test && terraform show -json tfplan > tfplan.json
+      - run: conftest test terraform-test/tfplan.json
