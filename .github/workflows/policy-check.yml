@@ -7,19 +7,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Install Terraform
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.7.5
 
-      # Install Go (needed for conftest)
       - uses: actions/setup-go@v4
         with:
           go-version: '1.21'
 
-      # Install conftest
       - name: Install conftest
         run: go install github.com/open-policy-agent/conftest@latest
+
+      - name: Install OPA
+        run: |
+          curl -L -o opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64
+          chmod +x opa
+          sudo mv opa /usr/local/bin/
 
       - name: Create dummy Terraform config
         run: |
@@ -41,18 +44,14 @@ jobs:
           }
           EOF
 
-      # Terraform Init & Plan
       - name: Terraform Init & Plan
-        run: |
-          cd terraform-test
-          terraform init
-          terraform plan -out=tfplan
-          terraform show -json tfplan > tfplan.json
+        run: cd terraform-test && terraform init && terraform plan -out=tfplan
 
-      # Conftest Policy Check
+      - name: Export plan to JSON
+        run: cd terraform-test && terraform show -json tfplan > tfplan.json
+
       - name: Conftest Policy Check
         run: conftest test terraform-test/tfplan.json
 
-      # Run OPA Unit Tests for Rego policies
       - name: Run OPA Unit Tests
         run: opa test policy/
