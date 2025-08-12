@@ -36,11 +36,15 @@ jobs:
             }
           }' > terraform-test/main.tf
 
-      # Run Terraform plan
-      - run: cd terraform-test && terraform init && terraform plan -out=tfplan
-      - run: cd terraform-test && terraform show -json tfplan > tfplan.json
+      # Terraform init & plan
+      - name: Terraform Init & Plan
+        run: |
+          cd terraform-test
+          terraform init
+          terraform plan -out=tfplan
+          terraform show -json tfplan > tfplan.json
 
-      # Inject environment tag into plan JSON so conftest passes
+      # Inject tags for testing
       - name: Inject tags for testing
         run: jq '.resource_changes[].change.after |= . + {tags: {environment: "dev"}}' terraform-test/tfplan.json > terraform-test/tfplan_tagged.json
 
