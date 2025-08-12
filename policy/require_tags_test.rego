@@ -6,7 +6,7 @@ test_pass_environment_tag {
             {
                 "change": {
                     "after": {
-                        "tags": { "environment": "dev" }
+                        "triggers": { "environment": "dev" }
                     }
                 }
             }
@@ -20,7 +20,7 @@ test_fail_missing_tag {
             {
                 "change": {
                     "after": {
-                        "tags": {}
+                        "triggers": {}
                     }
                 }
             }
