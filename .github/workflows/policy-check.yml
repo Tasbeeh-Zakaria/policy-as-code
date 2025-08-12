@@ -1,0 +1,14 @@
+name: Policy Check
+on: [pull_request]
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+      - run: go install github.com/open-policy-agent/conftest@latest
+      - run: terraform init && terraform plan -out=tfplan
+      - run: terraform show -json tfplan > tfplan.json
+      - run: conftest test tfplan.json
