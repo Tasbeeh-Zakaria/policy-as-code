@@ -1,6 +1,6 @@
 # Policy-as-Code Across Kubernetes, Azure and AWS
 
-Demonstrating cross-cloud policy enforcement with Kubernetes (OPA Gatekeeper), Azure Policy and AWS Service Control Policies—automated and secure by design. This lab shows how to **write, apply, and validate security/compliance policies** in multi-cloud and container environments, integrating automation, CI/CD and real-time policy monitoring.
+Demonstrating cross-cloud policy enforcement with Kubernetes (OPA Gatekeeper), Azure Policy and AWS Service Control Policies—automated and secure by design. This lab shows how to **write, apply and validate security/compliance policies** in multi-cloud and container environments, integrating automation, CI/CD and real-time policy monitoring.
 
 ---
 
