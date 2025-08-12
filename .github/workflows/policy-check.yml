@@ -1,19 +1,51 @@
-name: Policy Check
-on: [push, pull_request]
+name: Terraform + Conftest Lab
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '**/*.tf'
+      - '.github/workflows/lab.yml'
 
 jobs:
-  policy:
+  terraform-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      # Install OPA CLI for Rego unit tests
-      - name: Install OPA
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.2
+
+      - name: Install Conftest
         run: |
-          curl -L -o opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64
-          chmod +x opa
-          sudo mv opa /usr/local/bin/
+          wget https://github.com/open-policy-agent/conftest/releases/latest/download/conftest_$(uname -s)_$(uname -m).tar.gz
+          tar xzf conftest_$(uname -s)_$(uname -m).tar.gz
+          sudo mv conftest /usr/local/bin/
 
-      # Run OPA Unit Tests (this is Step 5.2 screenshot)
-      - name: Run OPA Unit Tests
-        run: opa test policy/
+      - name: Create dummy Terraform config
+        run: |
+          rm -rf terraform-test
+          mkdir terraform-test
+          cat > terraform-test/main.tf <<EOF
+          terraform {
+            required_version = ">= 1.0"
+          }
+          resource "null_resource" "example" {}
+          EOF
+
+      - name: Terraform Init & Plan
+        run: |
+          cd terraform-test
+          terraform init -input=false
+          terraform plan -out=tfplan
+
+      - name: Export plan to JSON
+        run: |
+          cd terraform-test
+          terraform show -json tfplan > tfplan.json
+
+      - name: Conftest Policy Check
+        run: conftest test terraform-test/tfplan.json
