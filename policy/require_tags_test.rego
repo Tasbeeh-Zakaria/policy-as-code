@@ -1,13 +1,35 @@
 package policy
 
-test_environment_tag_present {
+# Test when the environment tag is missing
+test_environment_tag_missing {
     some msg
     msg := "The 'environment' tag is required"
-    msg in deny with input as test_input
+    msg in deny with input as {
+        "resource_changes": [
+            {
+                "change": {
+                    "after": {
+                        "tags": {}
+                    }
+                }
+            }
+        ]
+    }
 }
 
-# Should PASS (tag missing -> deny contains message)
-test_environment_tag_missing {
-  test_input := {"resource": {"tags": {}}}
-  deny contains "The 'environment' tag is required" with input as test_input
+# Test when the environment tag is present
+test_environment_tag_present {
+    count(deny with input as {
+        "resource_changes": [
+            {
+                "change": {
+                    "after": {
+                        "tags": {
+                            "environment": "dev"
+                        }
+                    }
+                }
+            }
+        ]
+    }) == 0
 }
