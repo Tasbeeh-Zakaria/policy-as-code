@@ -48,7 +48,7 @@ jobs:
         run: cd terraform-test && terraform init && terraform plan -out=tfplan
 
       - name: Export plan to JSON
-        run: cd terraform-test && terraform show -json tfplan > tfplan.json
+        run: cd terraform-test && terraform show -json "tfplan" > tfplan.json
 
       - name: Conftest Policy Check
         run: conftest test terraform-test/tfplan.json
