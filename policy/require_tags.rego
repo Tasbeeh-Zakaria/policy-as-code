@@ -1,7 +1,7 @@
 package main
 
-# Passes if every resource has the "environment" tag.
+# Deny if "environment" tag is missing or empty
 deny[msg] {
   input.resource_changes[_].change.after.tags.environment == ""
-  msg := sprintf("Resource missing required 'environment' tag")
+  msg := "Resource missing required 'environment' tag"
 }
