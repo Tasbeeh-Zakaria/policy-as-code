@@ -5,10 +5,6 @@ terraform {
 provider "null" {}
 
 resource "null_resource" "example" {
-  triggers = {
-    environment = "dev"
-  }
-
   provisioner "local-exec" {
     command = "echo 'Hello Policy Check'"
   }
