@@ -1,24 +1,22 @@
-name: Step 5.2 OPA Unit Tests Only
+name: Step 5.2 - OPA Tests Only
 
 on:
-  workflow_dispatch:
   push:
     paths:
-      - 'opa-test/**'
-      - 'policy/**'
+      - 'policy/require_tags.rego'
+      - 'policy/require_tags_test.rego'
 
 jobs:
   opa-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Install OPA
         run: |
-         curl -L -o opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64
-         chmod +x opa
-         sudo mv opa /usr/local/bin/
+          curl -L -o opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64
+          chmod +x opa
+          sudo mv opa /usr/local/bin/
 
-      - name: Run OPA unit tests
+      - name: Run OPA Unit Tests
         run: opa test policy/
