@@ -5,7 +5,6 @@ jobs:
   policy:
     runs-on: ubuntu-latest
     steps:
-      # Pull repo
       - uses: actions/checkout@v4
 
       # Install Terraform
@@ -21,17 +20,20 @@ jobs:
       # Install conftest
       - run: go install github.com/open-policy-agent/conftest@latest
 
-      # Terraform init & plan (no tags in null_resource)
+      # Install OPA
+      - run: curl -L -o opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64 && chmod +x opa && sudo mv opa /usr/local/bin/
+
+      # Terraform init & plan
       - run: cd terraform-test && terraform init && terraform plan -out=tfplan
 
       # Convert plan to JSON
       - run: cd terraform-test && terraform show -json tfplan > tfplan.json
 
-      # Inject fake tags so policy passes
-      - name: Inject tags for testing
-        run: |
-          jq '.resource_changes[].change.after.tags = {"environment":"dev"}' terraform-test/tfplan.json > terraform-test/tfplan_tagged.json
-          mv terraform-test/tfplan_tagged.json terraform-test/tfplan.json
+      # Run conftest against plan (Step 5.1)
+      - name: Conftest Policy Check
+        run: conftest test terraform-test/tfplan.json
 
-      # Run conftest against updated plan
-      - run: conftest test terraform-test/tfplan.json
+      # Run OPA unit tests for Rego (Step 5.2)
+      - name: Run OPA Unit Tests
+        run: opa test policy/
+
