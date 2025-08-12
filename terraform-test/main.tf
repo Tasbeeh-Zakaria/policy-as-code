@@ -6,10 +6,9 @@ provider "null" {}
 
 resource "null_resource" "example" {
   provisioner "local-exec" {
-    command = "echo 'Hello Policy Check'"
+    command = "echo 'Hello Policy Check - PASS case'"
   }
 
-  # Tags for conftest policy to pass
   tags = {
     environment = "dev"
   }
