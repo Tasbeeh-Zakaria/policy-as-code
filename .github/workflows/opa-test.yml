@@ -1,7 +1,12 @@
-name: OPA Unit Test
+name: Step 5.2 OPA Unit Tests Only
 
 on:
-  workflow_dispatch:
+  push:
+    paths:
+      - 'policy/**'        # Run only when policy files change
+  pull_request:
+    paths:
+      - 'policy/**'        # Also run on PRs that modify policy files
 
 jobs:
   opa-test:
