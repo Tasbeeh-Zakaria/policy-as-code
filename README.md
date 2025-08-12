@@ -59,7 +59,7 @@ This lab demonstrates how to **shift left**—preventing violations before they 
 
 ## Diagram
 
-![Policy Architecture](diagram.png)
+![Architecture](diagram.png)
 
 ---
 
