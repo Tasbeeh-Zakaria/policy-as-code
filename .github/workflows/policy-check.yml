@@ -1,4 +1,4 @@
-name: Policy Check - Step 5.2
+name: Policy Check
 on: [push, pull_request]
 
 jobs:
