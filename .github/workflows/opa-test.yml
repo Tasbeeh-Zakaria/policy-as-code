@@ -1,11 +1,20 @@
-name: OPA Unit Tests
-on: [push]
+name: OPA Unit Test
+
+on:
+  workflow_dispatch:
 
 jobs:
-  opa-tests:
+  opa-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Install OPA
         run: |
-          curl -L
+          curl -L -o opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64
+          chmod +x opa
+          sudo mv opa /usr/local/bin/
+
+      - name: Run OPA unit tests
+        run: opa test policy/
