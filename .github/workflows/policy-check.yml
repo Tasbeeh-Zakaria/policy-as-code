@@ -24,8 +24,9 @@ jobs:
 
       - name: Create dummy Terraform config
         run: |
-          mkdir terraform-test
-          echo 'terraform {
+          mkdir -p terraform-test
+          cat > terraform-test/main.tf <<'EOT'
+          terraform {
             required_version = ">= 1.7.5"
           }
 
@@ -35,7 +36,8 @@ jobs:
             provisioner "local-exec" {
               command = "echo Hello Policy Check"
             }
-          }' > terraform-test/main.tf
+          }
+          EOT
 
       - name: Terraform Init & Plan
         run: |
