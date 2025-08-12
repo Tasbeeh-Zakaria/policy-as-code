@@ -1,5 +1,6 @@
 name: OPA Unit Tests
-on: [push]
+on:
+  workflow_dispatch:
 
 jobs:
   opa-tests:
@@ -15,4 +16,5 @@ jobs:
           sudo mv opa /usr/local/bin/
 
       - name: Run OPA unit tests
-        run: opa test policy/
+        run: |
+          opa test policy/
