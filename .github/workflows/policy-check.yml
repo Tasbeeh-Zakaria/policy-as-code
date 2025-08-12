@@ -20,7 +20,20 @@ jobs:
       # Install conftest
       - run: go install github.com/open-policy-agent/conftest@latest
 
-      # Terraform plan and conftest test
-      - run: cd terraform-test && terraform init && terraform plan -out=tfplan
-      - run: cd terraform-test && terraform show -json tfplan > tfplan.json
-      - run: conftest test terraform-test/tfplan.json
+      # Passing example
+      - name: Run policy check - PASS case
+        run: |
+          cd terraform-test
+          terraform init -input=false
+          terraform plan -out=tfplan
+          terraform show -json tfplan > tfplan.json
+          conftest test tfplan.json --policy ../policy
+
+      # Failing example
+      - name: Run policy check - FAIL case (expected)
+        run: |
+          cd terraform-fail
+          terraform init -input=false
+          terraform plan -out=tfplan
+          terraform show -json tfplan > tfplan.json
+          conftest test tfplan.json --policy ../policy || true
