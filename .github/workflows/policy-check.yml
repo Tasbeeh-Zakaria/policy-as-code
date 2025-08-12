@@ -37,3 +37,8 @@ jobs:
           terraform plan -out=tfplan
           terraform show -json tfplan > tfplan.json
           conftest test tfplan.json --policy ../policy || true
+
+      # Run OPA unit tests for Rego policies
+      - name: Run OPA unit tests
+        run: opa test policy/
+
