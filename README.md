@@ -11,10 +11,11 @@ Demonstrating cross-cloud policy enforcement with Kubernetes (OPA Gatekeeper), A
 - [Diagram](#diagram)
 - [Objectives](#objectives)
 - [Steps Performed](#steps-performed)
-  - [1. Kubernetes + OPA Gatekeeper Setup]
-  - [2. Azure Policy with Bicep]  
-  - [3. AWS Service-Control-Policies] 
-  - [4. Bonus Automation & Alerts]
+  - [1. Environment Setup]
+  - [2. OPA/Rego for Kubernetes]  
+  - [3. Azure Policy with Bicep]  
+  - [4. AWS Service Control Policies]  
+  - [5. Bonus Extras] 
 - [Screenshots](#screenshots)
 - [Lessons Learned](#lessons-learned)
 - [Notes and Limitations](#notes-and-limitations)
@@ -32,8 +33,10 @@ The goal: enforce security and compliance rules automatically, prevent misconfig
 - **Kubernetes** with [OPA Gatekeeper](https://open-policy-agent.github.io/gatekeeper/) for admission control.
 - **Azure Policy** using [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/)
 - **AWS Service Control Policies** (SCP) via the AWS CLI.
+
+**Bonuses:**
 - **GitHub Actions** CI/CD for policy testing.
-- **Grafana + Loki** for real-time policy violation dashboards.
+- **Grafana** for real-time policy violation dashboards.
 - **Slack integration** for policy alerts.
 - **Self-healing scripts** for auto-remediation.
 
@@ -74,78 +77,83 @@ This lab demonstrates how to **shift left**—preventing violations before they 
 
 ## Steps Performed
 
-### 1. Kubernetes + OPA Gatekeeper Setup
-   - Created a local Kubernetes cluster with Kind (*Screenshot:* `cluster_created.png`)*
-   - Installed OPA Gatekeeper for policy enforcement (*Screenshot:* `gatekeeper_ready.png`)*
-   - Applied the ConstraintTemplate to define required labels (*Screenshot:* `constraint-templates-crds.png`)*
-   - Described the constraint template parameters for required labels (*Screenshot:* `describe-constraints-requiredlabels.png`)*
-   - Applied the constraint to require the `app` label on workloads (*Screenshot:* `get-constraints-requiredlabels.png`)*
-   - Verified constraint operation by simulating a violation (*Screenshot:* `gatekeeper-labels-policy-deny.png`)*
-   - Listed and verified all constraints in the environment (*Screenshot:* `all-constraints-violations.png`)*
-   - Validated constraint enforcement with describe & verification commands (*Screenshot:* `constraints-verification-and-describe.png`)*
+**1. Environment Setup**  
+   - Created a local Kubernetes cluster with Kind for OPA tests.  
+   - Verified Gatekeeper pods were running *(Screenshots: `cluster_created.png`, `gatekeeper_ready.png`)*
+   - Logged in to AWS CLI using SSO for ephemeral credentials *(Screenshot: `aws_sso_login.png`)*  
 
----
+**2. OPA/Rego for Kubernetes**  
+   - Applied the `ConstraintTemplate` to enforce required labels *(Screenshot: `constraint-templates-crds.png`)*   
+   - Created the constraint definition for required labels *(Screenshot: `describe-constraints-requiredlabels.png`)*  
+   - Applied the constraint to the cluster and listed applied constraints *(Screenshot: `get-constraints-requiredlabels.png`)*  
+   - Deployed a workload missing the `app` label and verified it was denied *(Screenshot: `gatekeeper-labels-policy-deny.png`)* 
+   - Listed all constraint violations in the cluster *(Screenshot: `all-constraints-violations.png`)*   
+   - Verified constraint details and describe output *(Screenshot: `constraints-verification-and-describe.png`)*  
+   - Confirmed violation for workloads using `latest` image tags *(Screenshot: `violation-no-latest-tags.png`)*  
+   - Confirmed violation for workloads missing CPU/memory limits *(Screenshot: `violation-require-limits.png`)*  
 
-### 2. Azure Policy with Bicep
-   - Authored and deployed the Azure Policy to require an `environment` tag (*Screenshot:* `azure_policy_created.png`)*
-   - Verified the policy definition in the Azure portal (*Screenshot:* `azure_policy_assigned.png`)*
-   - Checked policy effect for compliance (allow scenario) (*Screenshot:* `azure_policy_allow.png`)*
-   - Tested the policy with a non-compliant resource (deny scenario) (*Screenshot:* `azure_policy_deny.png`)*
-   - Applied Azure Policy templates to enforce compliance at scale (*Screenshot:* `templates_applied.png`)*
-   - Verified policy violations for missing latest tags (*Screenshot:* `violation-no-latest-tags.png`)*
-   - Verified policy violations for missing resource limits (*Screenshot:* `violation-require-limits.png`)*
+**3. Azure Policy with Bicep**  
+- Created Azure Policy definition using Bicep *(Screenshot: `azure_policy_created.png`)*  
+- Assigned Azure Policy at the subscription scope *(Screenshot: `azure_policy_assigned.png`)*    
+- Verified compliance for allowed configurations *(Screenshot: `azure_policy_allow.png`)*   
+- Tested Azure Policy deny behavior for noncompliant resources *(Screenshot: `azure_policy_deny.png`)*   
+- Applied templates to enforce policies *(Screenshot: `templates_applied.png`)*  
 
----
+**4. AWS Service Control Policies**  
+- Created SCP JSON policy to block actions without MFA *(Screenshot: `AWS-PolicyCreated-MFA.png`)*  
+- Linked the SCP to the Organizational Unit *(Screenshot: `OU-Policy-Attach.png`)*  
+- Verified SCP details in the CLI *(Screenshot: `scp_details.png`)*   
+- Tested and confirmed denial of actions without MFA *(Screenshot: `scp-denywithoutmfa-success.png`)*  
 
-### 3. AWS Service Control Policies (SCP)
-   - Logged in to AWS using SSO for ephemeral credentials (*Screenshot:* `aws_sso_login.png`)*
-   - Created the SCP JSON to require MFA for all actions (*Screenshot:* `AWS-PolicyCreated-MFA.png`)*
-   - Attached the SCP to the target Organizational Unit (*Screenshot:* `OU-Policy-Attach.png`)*
-   - Viewed SCP details in AWS CLI output (*Screenshot:* `scp_details.png`)*
-   - Verified SCP enforcement with a successful deny-without-MFA test (*Screenshot:* `scp-denywithoutmfa-success.png`)*
+**5. Bonus Extras**  
+**5.1 GitHub Actions CI**  
+- Integrated GitHub Actions CI to run policy checks before deployment *(Screenshot: `github_actions_policy_pass.png`)*  
 
----
+**5.2 Grafana Policy Dashboard**  
+- Logged into Grafana to monitor policy violations in real time *(Screenshot: `grafana_login.png`)*  
 
-### 4. Bonus Automation, Alerts & Self-Healing
-   - Configured GitHub Actions CI to run `conftest` for policy testing (*Screenshot: `github_actions_policy_pass.png`)*
-   - Logged into Grafana for real-time policy dashboard access (*Screenshot:* `grafana_login.png`)*
-   - Displayed live dashboard example of multi-cloud policy violations (*Screenshot:* `dashboard-example.png`)*
-   - Tested Slack alert integration for policy violations (*Screenshot:* `slack_alert_simulation.png`)*
-   - Demonstrated self-healing script to auto-tag missing resources (*Screenshot:* `self_heal_tags.png`)*
-  
+**5.3 Dashboard Example**  
+- Displayed example dashboard with policy metrics *(Screenshot: `dashboard-example.png`)*  
+
+**5.4 Slack Alerts**  
+- Simulated Slack notifications for policy violations *(Screenshot: `slack_alert_simulation.png`)*  
+
+**5.5 Self-Healing Scripts**  
+- Applied automation to auto-tag missing tags *(Screenshot: `self_heal_tags.png`)*  
+
 ---
 
 ## Screenshots
 
 *All screenshots are included in the `screenshots/` folder.*
 
-| Step  | Filename                                  | Description                                      |
-|-------|-------------------------------------------|--------------------------------------------------|
-| 1.1   | cluster_created.png                       | Kubernetes cluster created with Kind             |
-| 1.2   | gatekeeper_ready.png                      | OPA Gatekeeper pods running                      |
-| 1.3   | constraint-templates-crds.png             | ConstraintTemplate for required labels           |
-| 1.4   | describe-constraints-requiredlabels.png   | Describing the required labels template          |
-| 1.5   | get-constraints-requiredlabels.png        | Constraints applied and listed                   |
-| 1.6   | gatekeeper-labels-policy-deny.png         | Denied workload missing `app` label              |
-| 1.7   | all-constraints-violations.png            | Overview of constraint violations                |
-| 1.8   | constraints-verification-and-describe.png | Constraint verification output                   |
-| 2.1   | azure_policy_created.png                  | Azure Policy created via Bicep                   |
-| 2.2   | azure_policy_assigned.png                 | Azure Policy assigned at subscription scope      |
-| 2.3   | azure_policy_allow.png                    | Azure Policy allow scenario                      |
-| 2.4   | azure_policy_deny.png                     | Azure Policy deny scenario                       |
-| 2.5   | templates_applied.png                     | Templates applied to enforce policy              |
-| 2.6   | violation-no-latest-tags.png              | Violation: missing latest tag                    |
-| 2.7   | violation-require-limits.png              | Violation: missing resource limits               |
-| 3.1   | aws_sso_login.png                         | AWS CLI SSO login                                |
-| 3.2   | AWS-PolicyCreated-MFA.png                 | SCP JSON for MFA enforcement                     |
-| 3.3   | OU-Policy-Attach.png                      | SCP attached to OU                               |
-| 3.4   | scp_details.png                           | SCP details in CLI output                        |
-| 3.5   | scp-denywithoutmfa-success.png            | SCP deny-without-MFA test success                |
-| 4.1   | github_actions_policy_pass.png            | GitHub Actions policy test passing               |
-| 4.2   | grafana_login.png                         | Grafana login for dashboard access               |
-| 4.3   | dashboard-example.png                     | Multi-cloud policy violation dashboard           |
-| 4.4   | slack_alert_simulation.png                | Slack alert for policy violation                 |
-| 4.5   | self_heal_tags.png                        | Auto-remediation tagging script                  |
+| Step | Filename                                 | Description                                         |
+|------|------------------------------------------|-----------------------------------------------------|
+| 1    | cluster_created.png                      | Kubernetes cluster created with Kind                |
+| 1    | gatekeeper_ready.png                     | OPA Gatekeeper pods running                         |
+| 1    | aws_sso_login.png                        | AWS CLI SSO login                                   |
+| 2    | constraint-templates-crds.png            | ConstraintTemplate for required labels              |
+| 2    | describe-constraints-requiredlabels.png  | Describing the required labels template             |
+| 2    | get-constraints-requiredlabels.png       | Constraints applied and listed                      |
+| 2    | gatekeeper-labels-policy-deny.png        | Denied workload missing `app` label                 |
+| 2    | all-constraints-violations.png           | Overview of constraint violations                   |
+| 2    | constraints-verification-and-describe.png| Constraint verification output                      |
+| 2    | violation-no-latest-tags.png             | Violation: missing latest tag                       |
+| 2    | violation-require-limits.png             | Violation: missing resource limits                  |
+| 3    | azure_policy_created.png                 | Azure Policy created via Bicep                      |
+| 3    | azure_policy_assigned.png                | Azure Policy assigned at subscription scope         |
+| 3    | azure_policy_allow.png                   | Azure Policy allow scenario                         |
+| 3    | azure_policy_deny.png                    | Azure Policy deny scenario                          |
+| 3    | templates_applied.png                    | Templates applied to enforce policy                 |
+| 4    | AWS-PolicyCreated-MFA.png                | SCP JSON for MFA enforcement                        |
+| 4    | OU-Policy-Attach.png                     | SCP attached to OU                                  |
+| 4    | scp_details.png                          | SCP details in CLI output                           |
+| 4    | scp-denywithoutmfa-success.png           | SCP deny-without-MFA test success                   |
+| 5.1  | github_actions_policy_pass.png           | GitHub Actions policy test passing                  |
+| 5.2  | grafana_login.png                        | Grafana login for dashboard access                  |
+| 5.3  | dashboard-example.png                    | Example Grafana dashboard                           |
+| 5.4  | slack_alert_simulation.png               | Slack alert simulation for violations               |
+| 5.5  | self_heal_tags.png                       | Self-healing tags automation                        |
 
 ---
 
