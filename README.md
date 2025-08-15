@@ -113,7 +113,7 @@ This lab demonstrates how to **shift left**—preventing violations before they 
 - Logged into Grafana to monitor policy violations in real time *(Screenshot: `grafana_login.png`)*  
 
 **5.3 Dashboard Example**  
-- Displayed example dashboard with policy metrics *(Screenshot: `dashboard-example.png`)*  
+- Displayed example dashboard with policy metrics *(Screenshot: `grafana-dashboard.png`)*  
 
 **5.4 Slack Alerts**  
 - Simulated Slack notifications for policy violations *(Screenshot: `slack_alert_simulation.png`)*  
