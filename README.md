@@ -15,7 +15,12 @@ Demonstrating cross-cloud policy enforcement with Kubernetes (OPA Gatekeeper), A
   - [2. OPA/Rego for Kubernetes]  
   - [3. Azure Policy with Bicep]  
   - [4. AWS Service Control Policies]  
-  - [5. Bonus Extras] 
+- [Bonuses](#bonuses)
+  - [1.1 GitHub Actions CI] 
+  - [1.2 Grafana Policy Dashboard]  
+  - [1.3 Dashboard Example]  
+  - [1.4 Slack Alerts]  
+  - [1.5 Self-Healing Scripts]  
 - [Screenshots](#screenshots)
 - [Lessons Learned](#lessons-learned)
 - [Notes and Limitations](#notes-and-limitations)
@@ -105,20 +110,23 @@ This lab demonstrates how to **shift left**—preventing violations before they 
 - Verified SCP details in the CLI *(Screenshot: `scp_details.png`)*   
 - Tested and confirmed denial of actions without MFA *(Screenshot: `scp-denywithoutmfa-success.png`)*  
 
-**5. Bonus Extras**  
-**5.1 GitHub Actions CI**  
+---
+
+## Bonuses 
+
+**1.1 GitHub Actions CI**  
 - Integrated GitHub Actions CI to run policy checks before deployment *(Screenshot: `github_actions_policy_pass.png`)*  
 
-**5.2 Grafana Policy Dashboard**  
+**1.2 Grafana Policy Dashboard**  
 - Logged into Grafana to monitor policy violations in real time *(Screenshot: `grafana_login.png`)*  
 
-**5.3 Dashboard Example**  
+**1.3 Dashboard Example**  
 - Displayed example dashboard with policy metrics *(Screenshot: `grafana-dashboard.png`)*  
 
-**5.4 Slack Alerts**  
+**1.4 Slack Alerts**  
 - Simulated Slack notifications for policy violations *(Screenshot: `slack_alert_simulation.png`)*  
 
-**5.5 Self-Healing Scripts**  
+**1.5 Self-Healing Scripts**  
 - Applied automation to auto-tag missing tags *(Screenshot: `self_heal_tags.png`)*  
 
 ---
@@ -149,11 +157,11 @@ This lab demonstrates how to **shift left**—preventing violations before they 
 | 4    | OU-Policy-Attach.png                     | SCP attached to OU                                  |
 | 4    | scp_details.png                          | SCP details in CLI output                           |
 | 4    | scp-denywithoutmfa-success.png           | SCP deny-without-MFA test success                   |
-| 5.1  | github_actions_policy_pass.png           | GitHub Actions policy test passing                  |
-| 5.2  | grafana_login.png                        | Grafana login for dashboard access                  |
-| 5.3  | dashboard-example.png                    | Example Grafana dashboard                           |
-| 5.4  | slack_alert_simulation.png               | Slack alert simulation for violations               |
-| 5.5  | self_heal_tags.png                       | Self-healing tags automation                        |
+| 1.1  | github_actions_policy_pass.png           | GitHub Actions policy test passing                  |
+| 1.2  | grafana_login.png                        | Grafana login for dashboard access                  |
+| 1.3  | dashboard-example.png                    | Example Grafana dashboard                           |
+| 1.4  | slack_alert_simulation.png               | Slack alert simulation for violations               |
+| 1.5  | self_heal_tags.png                       | Self-healing tags automation                        |
 
 ---
 
