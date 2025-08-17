@@ -50,7 +50,7 @@ The goal: enforce security and compliance rules automatically, prevent misconfig
 ## Real-World Risk
 
 Without automated guardrails, cloud and container environments can drift from security baselines.  
-Misconfigured Kubernetes deployments, untagged Azure resources or AWS accounts without MFA can lead to **compliance failures, security breaches, and costly incidents**.  
+Misconfigured Kubernetes deployments, untagged Azure resources or AWS accounts without MFA can lead to **compliance failures, security breaches and costly incidents**.  
 This lab demonstrates how to **shift left**—preventing violations before they reach production.
 
 ---
